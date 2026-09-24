@@ -1,0 +1,16 @@
+{
+  "name": "fenco",
+  "version": "2.0.0",
+  "description": "FENCO 2.0 - AI-powered contract risk auditing platform",
+  "scripts": {
+    "setup": "bash scripts/bootstrap.sh",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+    "build": "cd backend && npm run build && cd ../frontend && npm run build",
+    "test": "cd backend && npm test",
+    "check:naming": "bash scripts/check-naming-contract.sh",
+    "check:sql": "bash scripts/check-sql-interpolation.sh"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

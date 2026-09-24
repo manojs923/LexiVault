@@ -1,0 +1,27 @@
+INDEPENDENT CONTRACTOR SERVICES AGREEMENT
+
+This Agreement is entered into as of January 15, 2026, by and between Apex Global Enterprises Inc. ("Client") and the undersigned independent contractor ("Contractor").
+
+1. SCOPE OF SERVICES
+Contractor shall perform software engineering, architecture, and consulting services as directed from time to time by Client. Client reserves the right to modify, expand, or cancel services at any time at Client's sole discretion without additional compensation.
+
+2. PAYMENT TERMS
+Client shall pay Contractor the sum of $85 per hour for approved hours. Payment will be issued within ninety (90) business days following Client's receipt and subjective approval of Contractor's invoice. Client may withhold payment indefinitely if Client is unsatisfied with any deliverable for any reason.
+
+3. INTELLECTUAL PROPERTY ASSIGNMENT
+Contractor irrevocably assigns and transfers to Client all worldwide right, title, and interest in and to all inventions, works of authorship, code, patents, and trade secrets created, conceived, or reduced to practice by Contractor, whether created during or outside working hours, and whether or not related to Client's business, including all prior tools and personal libraries utilized by Contractor.
+
+4. UNLIMITED INDEMNIFICATION
+Contractor agrees to defend, indemnify, and hold completely harmless Client, its officers, affiliates, and customers from and against any and all claims, liabilities, losses, damages, attorney fees, and costs arising out of, resulting from, or in connection with Contractor's services, regardless of whether caused in whole or in part by Client's own negligence, breach, or willful misconduct.
+
+5. LIMITATION OF LIABILITY
+IN NO EVENT SHALL CLIENT BE LIABLE TO CONTRACTOR FOR ANY DIRECT, INDIRECT, CONSEQUENTIAL, OR SPECIAL DAMAGES. CLIENT'S MAXIMUM AGGREGATE LIABILITY UNDER THIS AGREEMENT SHALL BE STRICTLY LIMITED TO ONE HUNDRED DOLLARS ($100.00). CONTRACTOR'S LIABILITY TO CLIENT SHALL BE UNLIMITED.
+
+6. PERPETUAL NON-COMPETE AND NON-SOLICITATION
+During the term of this Agreement and perpetually thereafter worldwide, Contractor shall not directly or indirectly provide services, consult with, or engage in any business that competes with Client or any of Client's current or prospective partners. Contractor shall never solicit or communicate with any of Client's clients.
+
+7. TERMINATION
+Client may terminate this Agreement immediately at any time without notice and without cause. Upon termination, Client shall have no obligation to make any further payments to Contractor, including for work already performed but not yet invoiced. Contractor may not terminate this Agreement without ninety (90) days prior written notice and Client's written consent.
+
+8. GOVERNING LAW AND DISPUTE RESOLUTION
+This Agreement shall be governed exclusively by the laws of the State of Delaware. Any dispute shall be litigated solely in the state courts located in Wilmington, Delaware. Contractor hereby waives any right to a jury trial and agrees that Client shall be entitled to recover all legal fees from Contractor in any dispute.
