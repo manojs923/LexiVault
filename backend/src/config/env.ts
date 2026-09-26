@@ -8,7 +8,7 @@ import { z } from 'zod';
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.string().default('3001').transform(Number),
-  DATABASE_URL: z.string().default('postgresql://fenco:fenco_password@localhost:5432/fenco_db'),
+  DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
   REDIS_URL: z.string().default('redis://localhost:6379'),
   GEMINI_API_KEY: z.string().default(process.env.GEMINI_API_KEY || (process.env.NODE_ENV === 'test' ? 'test_key' : 'pending_key')),
   // Scoring thresholds
