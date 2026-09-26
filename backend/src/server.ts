@@ -1,6 +1,6 @@
-// FENCO 2.0 — Express Server Entry Point
+// LexiVault — Express Server Entry Point
 // Provider: Google Gemini (via @google/genai)
-// Last verified: 2026-09-22
+// Last verified: 2026-09-24
 
 import express from 'express';
 import helmet from 'helmet';
@@ -54,7 +54,7 @@ app.use('/api/', createRateLimiter());
 app.get('/api/health', (_req, res) => {
   res.json({
     status: 'ok',
-    service: 'fenco-api',
+    service: 'lexivault-api',
     version: '2.0.0',
     timestamp: new Date().toISOString(),
     providers: {
@@ -77,14 +77,14 @@ app.use(errorHandler);
 
 if (process.env.NODE_ENV !== 'test') {
   const server = app.listen(env.PORT, () => {
-    console.log(`🚀 FENCO API running on port ${env.PORT}`);
+    console.log(`🚀 LexiVault API running on port ${env.PORT}`);
     console.log(`📋 Environment: ${env.NODE_ENV}`);
     console.log(`🤖 Primary LLM: ${env.LLM_PRIMARY_MODEL}`);
     console.log(`🔢 Embedding model: ${env.EMBEDDING_PRIMARY_MODEL} (${env.EMBEDDING_DIMENSIONS} dims)`);
   });
 
   const shutdown = () => {
-    console.log('\n🛑 Gracefully shutting down FENCO API...');
+    console.log('\n🛑 Gracefully shutting down LexiVault API...');
     server.close(() => {
       process.exit(0);
     });

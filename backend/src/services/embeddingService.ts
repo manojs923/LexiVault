@@ -1,9 +1,9 @@
-// FENCO 2.0 — Embedding Service
+// LexiVault — Embedding Service
 // Provider: Google Gemini (via @google/genai)
-// Primary model: gemini-embedding-001 (3072 dims, MRL-capable)
+// Primary model: gemini-embedding-001 (768 dims MRL standard, HNSW native)
 // Fallback: gemini-embedding-001 at 768 dims (reduced accuracy)
 // Final fallback: deterministic hash vector (marks used_fallback_embedding=true)
-// Last verified: 2026-09-22
+// Last verified: 2026-09-25
 
 import { GoogleGenAI } from '@google/genai';
 import { getEnv } from '../config/env';
@@ -70,8 +70,10 @@ export async function embedText(text: string): Promise<EmbeddingResult> {
       });
       const values = response.embeddings?.[0]?.values;
       if (!values || values.length === 0) throw new Error('Empty embedding response');
-      // Pad to full dimensions with zeros
-      const padded = [...values, ...new Array(env.EMBEDDING_DIMENSIONS - values.length).fill(0)];
+      // Pad or slice to match target dimensions
+      const padded = values.length >= env.EMBEDDING_DIMENSIONS
+        ? values.slice(0, env.EMBEDDING_DIMENSIONS)
+        : [...values, ...new Array(env.EMBEDDING_DIMENSIONS - values.length).fill(0)];
       return padded;
     }, 2, 2000);
     

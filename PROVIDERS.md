@@ -9,7 +9,7 @@ Every service file in `backend/src/services/` must match what is listed here.
 |---|---|---|---|---|
 | Primary LLM | Google Gemini | `@google/genai` | `gemini-3.8-flash` | GA Sep 2, 2026 |
 | Fallback LLM | Google Gemini | `@google/genai` | `gemini-3.5-flash-lite` | Cost-optimized fallback |
-| Primary Embedding | Google Gemini | `@google/genai` | `gemini-embedding-001` | 3072 dims default, MRL |
+| Primary Embedding | Google Gemini | `@google/genai` | `gemini-embedding-001` | 768 dims (MRL standard, HNSW native) |
 | Embedding Fallback | Google Gemini | `@google/genai` | `gemini-embedding-001` | 768 dims reduced |
 | Final Embedding Fallback | N/A (deterministic) | N/A | `deterministic-hash-fallback` | Sets reduced_accuracy_mode=true |
 

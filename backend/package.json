@@ -1,7 +1,7 @@
 {
-  "name": "fenco-backend",
+  "name": "lexivault-backend",
   "version": "1.0.0",
-  "description": "FENCO 2.0 - AI-powered contract risk auditing platform backend",
+  "description": "LexiVault - AI-powered contract risk auditing platform backend",
   "main": "dist/server.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
@@ -18,6 +18,7 @@
     "@google/genai": "^1.0.0",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
+    "dotenv": "^18.0.3",
     "express": "^4.18.2",
     "express-rate-limit": "^7.1.5",
     "helmet": "^7.1.0",

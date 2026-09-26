@@ -1,6 +1,6 @@
 -- FENCO 2.0 — Initial Database Migration
 -- Verified pgvector extension via pgvector/pgvector:pg17 Docker image
--- Embedding dimensions: 3072 (gemini-embedding-001 default)
+-- Embedding dimensions: 768 (gemini-embedding-001 MRL standard, pgvector HNSW compatible)
 
 BEGIN;
 
@@ -24,41 +24,65 @@ BEGIN
 END $$;
 
 -- Source type enum for benchmark provenance
-CREATE TYPE source_type_enum AS ENUM (
-  'public_legal_aid',
-  'bar_association_template',
-  'synthetic_llm_generated',
-  'public_domain_form',
-  'other'
-);
+DO $$ BEGIN
+  CREATE TYPE source_type_enum AS ENUM (
+    'public_legal_aid',
+    'bar_association_template',
+    'synthetic_llm_generated',
+    'public_domain_form',
+    'other'
+  );
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
 
 -- Document type enum
-CREATE TYPE document_type_enum AS ENUM ('freelance', 'residential_lease', 'other');
+DO $$ BEGIN
+  CREATE TYPE document_type_enum AS ENUM ('freelance', 'residential_lease', 'other');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
 
 -- Document status enum
-CREATE TYPE document_status_enum AS ENUM (
-  'uploaded', 'ingesting', 'ingested', 'analyzing', 'analyzed', 'error'
-);
+DO $$ BEGIN
+  CREATE TYPE document_status_enum AS ENUM (
+    'uploaded', 'ingesting', 'ingested', 'analyzing', 'analyzed', 'error'
+  );
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
 
 -- Risk level enum
-CREATE TYPE risk_level_enum AS ENUM ('Standard', 'Caution', 'Unfavorable');
+DO $$ BEGIN
+  CREATE TYPE risk_level_enum AS ENUM ('Standard', 'Caution', 'Unfavorable');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
 
 -- Message role enum
-CREATE TYPE message_role_enum AS ENUM ('user', 'assistant');
+DO $$ BEGIN
+  CREATE TYPE message_role_enum AS ENUM ('user', 'assistant');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
 
 -- More favorable enum
-CREATE TYPE more_favorable_enum AS ENUM ('document_a', 'document_b', 'neither', 'depends');
+DO $$ BEGIN
+  CREATE TYPE more_favorable_enum AS ENUM ('document_a', 'document_b', 'neither', 'depends');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
 
 -- ============================================================
 -- BENCHMARK CLAUSES (the knowledge base)
 -- ============================================================
-CREATE TABLE benchmark_clauses (
+CREATE TABLE IF NOT EXISTS benchmark_clauses (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   clause_type VARCHAR(100) NOT NULL,
   document_type document_type_enum NOT NULL,
   text TEXT NOT NULL,
   text_hash VARCHAR(64) UNIQUE NOT NULL, -- SHA-256 for idempotency
-  embedding vector(3072),               -- gemini-embedding-001 default
+  embedding vector(768),                -- gemini-embedding-001 MRL standard (<2000 for HNSW)
   source_attribution VARCHAR(255) NOT NULL,
   source_type source_type_enum NOT NULL, -- must be truthfully populated
   source_url_or_note TEXT NOT NULL,      -- where this actually came from
@@ -66,18 +90,18 @@ CREATE TABLE benchmark_clauses (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- HNSW index for fast similarity search (§5 spec requirement)
-CREATE INDEX benchmark_clauses_embedding_idx
+-- HNSW index on 768-dimensional embeddings (<2000 pgvector limit)
+CREATE INDEX IF NOT EXISTS benchmark_clauses_embedding_idx
   ON benchmark_clauses
   USING hnsw (embedding vector_cosine_ops)
   WITH (m = 16, ef_construction = 64);
 
-CREATE INDEX benchmark_clauses_type_idx ON benchmark_clauses (clause_type, document_type);
+CREATE INDEX IF NOT EXISTS benchmark_clauses_type_idx ON benchmark_clauses (clause_type, document_type);
 
 -- ============================================================
 -- DOCUMENTS
 -- ============================================================
-CREATE TABLE documents (
+CREATE TABLE IF NOT EXISTS documents (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   filename VARCHAR(255) NOT NULL,           -- UUID-prefixed safe filename
   original_name VARCHAR(255) NOT NULL,       -- original user-supplied name
@@ -89,19 +113,19 @@ CREATE TABLE documents (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX documents_status_idx ON documents (status);
+CREATE INDEX IF NOT EXISTS documents_status_idx ON documents (status);
 
 -- ============================================================
 -- CLAUSES (extracted and scored)
 -- ============================================================
-CREATE TABLE clauses (
+CREATE TABLE IF NOT EXISTS clauses (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   document_id UUID NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
   clause_index INTEGER NOT NULL,
   clause_type VARCHAR(100) NOT NULL DEFAULT 'Unknown',
   text TEXT NOT NULL,
   text_hash VARCHAR(64) NOT NULL,
-  embedding vector(3072),
+  embedding vector(768),
   risk_level risk_level_enum,
   similarity_score REAL,
   confidence_score REAL,                   -- 0.0-1.0, see §7.4
@@ -116,29 +140,29 @@ CREATE TABLE clauses (
 );
 
 -- HNSW index for document Q&A retrieval (§7B)
-CREATE INDEX clauses_embedding_idx
+CREATE INDEX IF NOT EXISTS clauses_embedding_idx
   ON clauses
   USING hnsw (embedding vector_cosine_ops)
   WITH (m = 16, ef_construction = 64);
 
-CREATE INDEX clauses_document_id_idx ON clauses (document_id);
-CREATE INDEX clauses_risk_level_idx ON clauses (document_id, risk_level);
+CREATE INDEX IF NOT EXISTS clauses_document_id_idx ON clauses (document_id);
+CREATE INDEX IF NOT EXISTS clauses_risk_level_idx ON clauses (document_id, risk_level);
 
 -- ============================================================
 -- Q&A SESSIONS (§7B)
 -- ============================================================
-CREATE TABLE qa_sessions (
+CREATE TABLE IF NOT EXISTS qa_sessions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   document_id UUID NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX qa_sessions_document_id_idx ON qa_sessions (document_id);
+CREATE INDEX IF NOT EXISTS qa_sessions_document_id_idx ON qa_sessions (document_id);
 
 -- ============================================================
 -- Q&A MESSAGES (§7B)
 -- ============================================================
-CREATE TABLE qa_messages (
+CREATE TABLE IF NOT EXISTS qa_messages (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   session_id UUID NOT NULL REFERENCES qa_sessions(id) ON DELETE CASCADE,
   role message_role_enum NOT NULL,
@@ -147,12 +171,12 @@ CREATE TABLE qa_messages (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX qa_messages_session_id_idx ON qa_messages (session_id);
+CREATE INDEX IF NOT EXISTS qa_messages_session_id_idx ON qa_messages (session_id);
 
 -- ============================================================
 -- COMPARISONS (§7A)
 -- ============================================================
-CREATE TABLE comparisons (
+CREATE TABLE IF NOT EXISTS comparisons (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   document_a_id UUID NOT NULL REFERENCES documents(id),
   document_b_id UUID NOT NULL REFERENCES documents(id),
@@ -160,12 +184,12 @@ CREATE TABLE comparisons (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX comparisons_docs_idx ON comparisons (document_a_id, document_b_id);
+CREATE INDEX IF NOT EXISTS comparisons_docs_idx ON comparisons (document_a_id, document_b_id);
 
 -- ============================================================
 -- COMPARISON CLAUSE PAIRS (§7A)
 -- ============================================================
-CREATE TABLE comparison_clause_pairs (
+CREATE TABLE IF NOT EXISTS comparison_clause_pairs (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   comparison_id UUID NOT NULL REFERENCES comparisons(id) ON DELETE CASCADE,
   clause_a_id UUID REFERENCES clauses(id),   -- null if only in Doc B
@@ -177,7 +201,7 @@ CREATE TABLE comparison_clause_pairs (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX comparison_pairs_comparison_id_idx ON comparison_clause_pairs (comparison_id);
+CREATE INDEX IF NOT EXISTS comparison_pairs_comparison_id_idx ON comparison_clause_pairs (comparison_id);
 
 -- Mark migration as applied
 INSERT INTO schema_migrations (version) VALUES ('001_init')

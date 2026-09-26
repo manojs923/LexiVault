@@ -1,0 +1,16 @@
+INDEPENDENT CONTRACTOR AGREEMENT (FAIR STANDARD DRAFT)
+
+SECTION 1: PAYMENT TERMS
+Client shall pay Contractor the agreed fee within thirty (30) days of invoice receipt. Late payments shall accrue interest at 1.5% per month. Reimbursable expenses approved in writing shall be paid within 15 days.
+
+SECTION 2: INTELLECTUAL PROPERTY RIGHTS
+Upon receipt of full payment, Contractor assigns to Client all rights in deliverables specifically created for this engagement. Contractor retains ownership of all pre-existing tools, libraries, and frameworks, granting Client a perpetual license for their use in deliverables.
+
+SECTION 3: MUTUAL INDEMNIFICATION
+Each party shall indemnify and hold harmless the other party from claims arising directly from that party own negligence, willful misconduct, or material breach of this Agreement. Neither party indemnifies for the other party negligence.
+
+SECTION 4: NON-SOLICITATION
+During the term of this Agreement, Contractor agrees not to solicit Client direct employees. This Agreement does not restrict Contractor ability to perform services for any other client or competitor.
+
+SECTION 5: TERMINATION FOR CONVENIENCE
+Either party may terminate this Agreement upon thirty (30) days advance written notice. Client shall pay for all work completed and approved through the termination date.

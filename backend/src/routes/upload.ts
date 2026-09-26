@@ -3,6 +3,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 import path from 'path';
+import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { query } from '../db/connection';
@@ -15,12 +16,24 @@ import { LEGAL_DISCLAIMER } from '../types/index';
 const router = Router();
 const env = getEnv();
 
-const ALLOWED_MIME_TYPES = ['application/pdf', 'text/plain'];
+// Ensure upload directory exists immediately on module load
+const uploadDir = path.resolve(env.UPLOAD_DIR);
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 const ALLOWED_EXTENSIONS = ['.pdf', '.txt'];
+const ALLOWED_MIME_TYPES = ['application/pdf', 'text/plain', 'application/octet-stream', 'text/markdown'];
 
 // Multer config: UUID-prefixed filenames, MIME + extension validation
 const storage = multer.diskStorage({
-  destination: path.resolve(env.UPLOAD_DIR),
+  destination: (_req, _file, cb) => {
+    const dir = path.resolve(env.UPLOAD_DIR);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
+  },
   filename: (_req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
     cb(null, `${uuidv4()}${ext}`);
@@ -32,8 +45,8 @@ const upload = multer({
   limits: { fileSize: env.MAX_FILE_SIZE_MB * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
-    if (!ALLOWED_MIME_TYPES.includes(file.mimetype) || !ALLOWED_EXTENSIONS.includes(ext)) {
-      cb(createError('Only PDF and TXT files are accepted', 400));
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      cb(createError(`Invalid file format (${ext || 'unspecified'}). Only PDF and TXT files are accepted.`, 400));
       return;
     }
     cb(null, true);
@@ -58,12 +71,18 @@ router.post(
       const documentType = body.success ? body.data.documentType : 'other';
       
       // Create document record
-      const result = await query<{ id: string }>(
-        `INSERT INTO documents (filename, original_name, document_type, status)
-         VALUES ($1, $2, $3, $4)
-         RETURNING id`,
-        [req.file.filename, truncateForLog(req.file.originalname, 255), documentType, 'uploaded']
-      );
+      let result;
+      try {
+        result = await query<{ id: string }>(
+          `INSERT INTO documents (filename, original_name, document_type, status)
+           VALUES ($1, $2, $3, $4)
+           RETURNING id`,
+          [req.file.filename, truncateForLog(req.file.originalname, 255), documentType, 'uploaded']
+        );
+      } catch (dbErr: any) {
+        console.error('[Upload] Database insert failed:', dbErr);
+        return next(createError(`Database error: ${dbErr.message || 'Failed to save document. Ensure PostgreSQL is running.'}`, 500));
+      }
       
       const documentId = result.rows[0].id;
       

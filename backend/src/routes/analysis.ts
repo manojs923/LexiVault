@@ -156,7 +156,8 @@ router.get('/:id/gotchas', async (req: Request, res: Response, next: NextFunctio
     // Check if gotchas are already persisted in DB
     const existing = await getPersistedGotchas(id);
     if (existing.length > 0) {
-      return res.json({ gotchas: existing, disclaimer: LEGAL_DISCLAIMER });
+      res.json({ gotchas: existing, disclaimer: LEGAL_DISCLAIMER });
+      return;
     }
     
     const clauseResult = await query<{

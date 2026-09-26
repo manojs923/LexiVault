@@ -1,35 +1,55 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { AnalysisResult } from '../types';
-import { apiClient } from '../api/client';
+import { useAnalysis } from '../hooks/useAnalysis';
 import { ReducedAccuracyBanner } from '../components/ReducedAccuracyBanner';
 import { GotchasSummary } from '../components/GotchasSummary';
 import { ClauseCard } from '../components/ClauseCard';
 import { DocumentChatPanel } from '../components/DocumentChatPanel';
-import { ArrowLeft, FileText, CheckCircle2, AlertTriangle, AlertOctagon, Zap } from 'lucide-react';
+import { ArrowLeft, FileText, CheckCircle2, AlertTriangle, AlertOctagon, Zap, AlertCircle, RefreshCw } from 'lucide-react';
 
 export function AnalysisPage() {
   const { id } = useParams<{ id: string }>();
-  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const { data: result, status, error, reload } = useAnalysis(id);
 
-  useEffect(() => {
-    if (id) {
-      apiClient.getAnalysis(id).then(setResult).catch(console.error);
-    }
-  }, [id]);
-
-  if (!result) {
+  // 1. Error state: No silent demo fallback, show real error message
+  if (status === 'error' || error) {
     return (
-      <div style={{ padding: 'var(--spacing-8)', textAlign: 'center', maxWidth: '600px', margin: '60px auto' }}>
-        <div style={{ fontSize: '2rem', marginBottom: 'var(--spacing-4)' }}>⏳</div>
-        <h2>Auditing Contract Clauses...</h2>
-        <p style={{ color: 'var(--color-text-muted)', marginTop: '8px' }}>
-          Decomposing provisions, evaluating vector similarity against benchmark standards, and running semantic risk analysis.
+      <div style={{ maxWidth: '640px', margin: '80px auto', padding: 'var(--spacing-8)', textAlign: 'center' }} className="card">
+        <AlertCircle size={48} color="var(--color-risk-unfavorable)" style={{ margin: '0 auto var(--spacing-4)' }} />
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 'var(--spacing-2)' }}>Analysis Failed</h2>
+        <p style={{ color: 'var(--color-text-muted)', marginBottom: 'var(--spacing-6)', lineHeight: 1.5 }}>
+          {error}
+        </p>
+        <div style={{ display: 'flex', gap: 'var(--spacing-3)', justifyContent: 'center' }}>
+          <button className="btn btn-secondary" onClick={reload}>
+            <RefreshCw size={16} /> Try Again
+          </button>
+          <Link to="/" className="btn btn-primary">
+            <ArrowLeft size={16} /> Back to Upload
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Loading / Processing state: Ingestion or Analysis in progress
+  if (status === 'loading' || status === 'ingesting' || status === 'analyzing' || !result) {
+    return (
+      <div style={{ padding: 'var(--spacing-8)', textAlign: 'center', maxWidth: '600px', margin: '80px auto' }}>
+        <div style={{ fontSize: '2.5rem', marginBottom: 'var(--spacing-4)' }}>⏳</div>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 700 }}>
+          {status === 'ingesting' ? 'Extracting & Ingesting Provisions...' : 'Auditing Contract Clauses...'}
+        </h2>
+        <p style={{ color: 'var(--color-text-muted)', marginTop: '8px', lineHeight: 1.5 }}>
+          {status === 'ingesting'
+            ? 'Decomposing contract into discrete legal provisions and computing vector embeddings...'
+            : 'Evaluating vector similarity against benchmark standards and running semantic risk analysis...'}
         </p>
       </div>
     );
   }
 
+  // 3. Completed state: Real data from the API
   const standardCount = result.clauses.filter(c => c.riskLevel === 'Standard').length;
   const cautionCount = result.clauses.filter(c => c.riskLevel === 'Caution').length;
   const unfavorableCount = result.clauses.filter(c => c.riskLevel === 'Unfavorable').length;

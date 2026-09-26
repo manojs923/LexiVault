@@ -7,7 +7,7 @@ export function DisclaimerBanner() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-2)', maxWidth: '1200px', margin: '0 auto', lineHeight: 1.4 }}>
         <AlertCircle size={16} style={{ flexShrink: 0 }} />
         <span>
-          <strong>Informational Only — Not Legal Advice:</strong> FENCO helps you spot risks and prepare for negotiations, but cannot replace a licensed attorney. Consult legal counsel for binding decisions and state-specific legal nuances.
+          <strong>Informational Only — Not Legal Advice:</strong> LexiVault helps you spot risks and prepare for negotiations, but cannot replace a licensed attorney. Consult legal counsel for binding decisions and state-specific legal nuances.
         </span>
       </div>
     </div>

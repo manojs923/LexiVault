@@ -8,7 +8,7 @@ export function Navbar() {
       <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', color: 'white', fontWeight: 'bold', fontSize: '1.25rem' }}>
           <Shield size={24} color="var(--color-accent-light)" />
-          FENCO 2.0
+          LexiVault
         </Link>
         <div style={{ display: 'flex', gap: 'var(--spacing-4)', alignItems: 'center' }}>
           <Link to="/" style={{ color: 'white', opacity: 0.9, fontSize: '0.9rem', fontWeight: 500 }}>Upload & Audit</Link>

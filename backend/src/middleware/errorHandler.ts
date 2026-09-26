@@ -24,11 +24,15 @@ export function errorHandler(
 ): void {
   const statusCode = err.statusCode || 500;
   
-  // Log internally (truncated, never full content)
-  console.error(`[ERROR] ${req.method} ${req.path}: ${truncateForLog(err.message)}`);
+  // Log internally
+  console.error(`[ERROR] ${req.method} ${req.path} (${statusCode}):`, err.message || err);
+  if (err.stack) {
+    console.error(err.stack);
+  }
   
-  // Never expose internal error detail
-  const clientMessage = err.isOperational
+  // In development, return the actual error message to diagnose issues immediately
+  const isDev = process.env.NODE_ENV !== 'production';
+  const clientMessage = (err.isOperational || isDev)
     ? err.message
     : 'An unexpected error occurred. Please try again.';
   

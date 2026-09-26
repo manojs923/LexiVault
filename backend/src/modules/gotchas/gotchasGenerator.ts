@@ -2,7 +2,7 @@
 // Single batched LLM call to produce a "Before You Sign" summary.
 
 import { callLlmJson } from '../../services/llmService';
-import { db } from '../../db/connection';
+import { query } from '../../db/connection';
 import type { ScoredClause, Gotcha } from '../../types/index';
 
 interface GotchasOutput {
@@ -99,10 +99,10 @@ export async function persistGotchas(
   gotchas: Gotcha[]
 ): Promise<void> {
   // Clear any existing gotchas for this document first
-  await db.query('DELETE FROM gotchas WHERE document_id = $1', [documentId]);
+  await query('DELETE FROM gotchas WHERE document_id = $1', [documentId]);
 
   for (const gotcha of gotchas) {
-    await db.query(
+    await query(
       `INSERT INTO gotchas (document_id, title, explanation, risk_level, related_clause_index)
        VALUES ($1, $2, $3, $4, $5)`,
       [documentId, gotcha.title, gotcha.explanation, gotcha.riskLevel, gotcha.relatedClauseIndex]
@@ -114,7 +114,7 @@ export async function persistGotchas(
  * Fetch persisted gotchas from the database table.
  */
 export async function getPersistedGotchas(documentId: string): Promise<Gotcha[]> {
-  const result = await db.query<{
+  const result = await query<{
     title: string;
     explanation: string;
     risk_level: string;

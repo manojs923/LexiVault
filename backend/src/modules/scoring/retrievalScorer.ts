@@ -34,19 +34,19 @@ export async function retrieveBenchmarkMatches(
 ): Promise<RetrievalResult> {
   const env = getEnv();
   
-  // pgvector cosine similarity search using HNSW index
-  // The <=> operator computes cosine distance; 1 - distance = similarity
+  // pgvector cosine similarity search using the halfvec-backed HNSW index.
+  // The <=> operator computes cosine distance; 1 - distance = similarity.
   const result = await query<{
     id: string;
     clause_type: string;
     text: string;
     similarity: number;
   }>(
-    `SELECT id, clause_type, text,
-            1 - (embedding <=> $1::vector) as similarity
+      `SELECT id, clause_type, text,
+          1 - (embedding <=> $1::vector) as similarity
      FROM benchmark_clauses
      WHERE document_type = $2
-     ORDER BY embedding <=> $1::vector
+       ORDER BY embedding <=> $1::vector
      LIMIT 3`,
     [
       `[${embeddingVector.join(',')}]`,

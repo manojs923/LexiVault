@@ -2,6 +2,7 @@
 // Validates all required environment variables at startup using Zod.
 // The application will fail fast if any required variable is missing.
 
+import 'dotenv/config';
 import { z } from 'zod';
 
 const envSchema = z.object({
@@ -22,10 +23,12 @@ const envSchema = z.object({
   // CORS
   CORS_ORIGIN: z.string().default('http://localhost:5173'),
   // LLM Config
+  LLM_PROVIDER: z.enum(['auto', 'gemini', 'mistral']).default('auto'),
+  MISTRAL_API_KEY: z.string().optional().default(process.env.MISTRAL_API_KEY || ''),
   LLM_PRIMARY_MODEL: z.string().default('gemini-3.8-flash'),
   LLM_FALLBACK_MODEL: z.string().default('gemini-3.5-flash-lite'),
   EMBEDDING_PRIMARY_MODEL: z.string().default('gemini-embedding-001'),
-  EMBEDDING_DIMENSIONS: z.string().default('3072').transform(Number),
+  EMBEDDING_DIMENSIONS: z.string().default('768').transform(Number),
   // Pipeline config
   MAX_COUNTER_DRAFTS: z.string().default('5').transform(Number),
 });

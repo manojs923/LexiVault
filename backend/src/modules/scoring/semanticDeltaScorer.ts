@@ -64,7 +64,9 @@ ${uploadedClauseText.slice(0, 2000)}
 **Market-Standard Benchmark Clause:**
 ${benchmarkClauseText.slice(0, 2000)}
 
-Classify the risk level of the uploaded clause and explain what makes it risky or acceptable. Also report your confidence (0.0-1.0) in this classification, considering the clause length, ambiguity, and how clear the risk is.`;
+Classify the risk level of the uploaded clause and explain what makes it risky or acceptable. Also report your confidence (0.0-1.0) in this classification, considering the clause length, ambiguity, and how clear the risk is.
+
+Respond strictly with a valid JSON object matching the schema: {"riskLevel": "Standard" | "Caution" | "Unfavorable", "explanation": "string", "confidence": number}.`;
   
   try {
     const result = await callLlmJson<{

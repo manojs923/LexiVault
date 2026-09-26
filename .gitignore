@@ -1,0 +1,79 @@
+# ==========================================
+# LexiVault Root .gitignore (< 10 MB Enforcement)
+# ==========================================
+
+# Dependencies (MUST NEVER BE COMMITTED - 200+ MB)
+node_modules/
+*/node_modules/
+**/node_modules/
+**/node_modules/**
+
+# Production builds & artifacts
+dist/
+build/
+*/dist/
+*/build/
+**/dist/
+**/dist/**
+**/build/**
+
+# Environment and sensitive keys (API Keys & Secrets)
+.env
+.env.*
+!.env.example
+*.env
+backend/.env
+frontend/.env
+**/backend/.env
+**/frontend/.env
+
+# Temporary and upload directories (User contract uploads)
+uploads/
+*/uploads/
+**/uploads/
+**/uploads/**
+tmp/
+temp/
+**/tmp/**
+**/temp/**
+
+# Database and docker data volumes
+postgres_data/
+**/postgres_data/**
+*.sqlite
+*.db
+
+# Logs & debugging
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+**/logs/**
+
+# Test coverage & profiling
+coverage/
+*/coverage/
+**/coverage/**
+.nyc_output/
+
+# Cache directories
+.cache/
+.parcel-cache/
+.eslintcache
+.tsbuildinfo
+**/.cache/**
+
+# OS metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# IDE and Editor configuration
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace

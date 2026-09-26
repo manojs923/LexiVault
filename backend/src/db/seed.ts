@@ -1,7 +1,7 @@
-// FENCO 2.0 — Benchmark Corpus Seeder
+// LexiVault — Benchmark Corpus Seeder
 // Provider: Google Gemini (via @google/genai) for embeddings
-// Embedding model: gemini-embedding-001 (3072 dims)
-// Last verified: 2026-09-22
+// Embedding model: gemini-embedding-001 (768 dims MRL standard)
+// Last verified: 2026-09-25
 //
 // All benchmark clauses are labeled synthetic_llm_generated.
 // See BENCHMARK_PROVENANCE.md for full provenance explanation.

@@ -1,0 +1,16 @@
+INDEPENDENT CONTRACTOR AGREEMENT (RISKY DRAFT)
+
+SECTION 1: PAYMENT AND COMPENSATION
+Payment will be issued within ninety (90) business days following Client receipt and subjective approval of Contractor invoice. Client may withhold payment indefinitely if dissatisfied with deliverables or if project scope changes.
+
+SECTION 2: INTELLECTUAL PROPERTY ASSIGNMENT
+Contractor irrevocably assigns all worldwide right, title, and interest in all inventions, works of authorship, code, designs, and patents created during or outside working hours, including all prior personal tools and proprietary frameworks.
+
+SECTION 3: INDEMNIFICATION AND LIABILITY
+Contractor agrees to defend, indemnify, and hold completely harmless Client and its affiliates from and against any and all claims, damages, liabilities, and legal costs, regardless of whether caused by Client own negligence or breach.
+
+SECTION 4: NON-COMPETE RESTRICTION
+During the term of this Agreement and perpetually thereafter worldwide, Contractor shall not directly or indirectly provide services to, consult for, or engage in any business that competes with Client.
+
+SECTION 5: TERMINATION
+Either party may terminate this Agreement upon thirty (30) days advance written notice to the other party.

@@ -3,49 +3,63 @@ import { useParams, Link } from 'react-router-dom';
 import { AttorneyChecklist as ChecklistType } from '../types';
 import { apiClient } from '../api/client';
 import { AttorneyChecklist } from '../components/AttorneyChecklist';
-import { ArrowLeft, Scale, FileText } from 'lucide-react';
+import { ArrowLeft, AlertCircle, RefreshCw } from 'lucide-react';
 
 export function AttorneyPrepPage() {
   const { type, id } = useParams<{ type: string, id: string }>();
   const [checklist, setChecklist] = useState<ChecklistType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchChecklist = () => {
+    setLoading(true);
+    setError(null);
+
+    const promise = type === 'compare'
+      ? apiClient.getComparisonChecklist(id || 'demo')
+      : apiClient.getChecklist(id!);
+
+    promise
+      .then(setChecklist)
+      .catch((err) => {
+        console.error('Checklist fetch error:', err);
+        setError(err instanceof Error ? err.message : 'Failed to generate attorney checklist.');
+      })
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    if (type === 'compare') {
-      // Comparison-specific lawyer checklist
-      setChecklist({
-        summary: 'Document Comparison Consultation Brief: Comparing Offer A (Apex Global - high risk) against Offer B (Beacon Studio - balanced terms). Focus this legal consultation on eliminating the one-sided terms found exclusively in Offer A.',
-        flaggedItems: [
-          'Perpetual Non-Compete (Found only in Offer A): Prohibits contractor from working with any competing client worldwide perpetually. Offer B contains no such clause.',
-          'Unilateral Indemnification (Offer A vs B): Offer A forces contractor to indemnify client even for client own negligence, whereas Offer B is standard mutual indemnification.',
-          'Payment Terms Discrepancy: Offer A locks funds for 90 days with subjective withholding, while Offer B uses market-standard Net-30.',
-          'Asymmetric Liability: Offer A caps client damages at $100 while contractor liability is uncapped. Offer B caps both parties at 6 months fees.'
-        ],
-        questionsToAsk: [
-          'Can we propose Offer B non-compete terms (narrow non-solicitation of direct employees only) as our non-negotiable markup to Offer A?',
-          'Is the $100 liability cap in Offer A enforceable under our jurisdiction commercial unconscionability standards?',
-          'If we must sign Offer A, what specific carve-outs must we insert into the indemnification section to protect against third-party patent suits?',
-          'Does our state prompt payment law override Offer A 90-day subjective payment holding provision?'
-        ],
-        documentsToGather: [
-          'Copies of both Offer A and Offer B with highlighted clause comparison',
-          'Scope of work and fee estimates for both potential engagements',
-          'List of existing clients and projects to verify against the non-compete restriction',
-          'Proof of professional liability (E&O) insurance coverage'
-        ]
-      });
-    } else if (id) {
-      apiClient.getChecklist(id).then(setChecklist).catch(console.error);
-    }
+    fetchChecklist();
   }, [type, id]);
 
-  if (!checklist) {
+  if (loading) {
     return (
-      <div style={{ padding: 'var(--spacing-8)', textAlign: 'center', maxWidth: '600px', margin: '60px auto' }}>
-        <div style={{ fontSize: '2rem', marginBottom: 'var(--spacing-4)' }}>⏳</div>
-        <h2>Synthesizing Attorney Consultation Brief...</h2>
-        <p style={{ color: 'var(--color-text-muted)' }}>
+      <div style={{ padding: 'var(--spacing-8)', textAlign: 'center', maxWidth: '600px', margin: '80px auto' }}>
+        <div style={{ fontSize: '2.5rem', marginBottom: 'var(--spacing-4)' }}>⏳</div>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Synthesizing Attorney Consultation Brief...</h2>
+        <p style={{ color: 'var(--color-text-muted)', marginTop: '8px', lineHeight: 1.5 }}>
           Generating clause-grounded questions and evidence checklists to maximize your lawyer consultation time.
         </p>
+      </div>
+    );
+  }
+
+  if (error || !checklist) {
+    return (
+      <div style={{ maxWidth: '600px', margin: '80px auto', padding: 'var(--spacing-8)', textAlign: 'center' }} className="card">
+        <AlertCircle size={48} color="var(--color-risk-unfavorable)" style={{ margin: '0 auto var(--spacing-4)' }} />
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 'var(--spacing-2)' }}>Checklist Unavailable</h2>
+        <p style={{ color: 'var(--color-text-muted)', marginBottom: 'var(--spacing-6)' }}>
+          {error || 'Unable to generate checklist for this document.'}
+        </p>
+        <div style={{ display: 'flex', gap: 'var(--spacing-3)', justifyContent: 'center' }}>
+          <button className="btn btn-secondary" onClick={fetchChecklist}>
+            <RefreshCw size={16} /> Try Again
+          </button>
+          <Link to={type === 'analysis' ? `/analysis/${id}` : `/compare/${id}`} className="btn btn-primary">
+            <ArrowLeft size={16} /> Return to Document
+          </Link>
+        </div>
       </div>
     );
   }
@@ -59,10 +73,13 @@ export function AttorneyPrepPage() {
         >
           <ArrowLeft size={16} /> Back to {type === 'analysis' ? 'Contract Audit' : 'Comparison View'}
         </Link>
-        <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-          {type === 'compare' ? <Scale size={16} /> : <FileText size={16} />}
-          {type === 'compare' ? 'Comparison-Mode Brief (§7C)' : 'Single-Document Brief (§7C)'}
-        </span>
+        <button 
+          onClick={() => window.print()}
+          className="btn btn-secondary"
+          style={{ fontSize: '0.85rem' }}
+        >
+          🖨️ Print / Save PDF
+        </button>
       </div>
 
       <AttorneyChecklist checklist={checklist} />

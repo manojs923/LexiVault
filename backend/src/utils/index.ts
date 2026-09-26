@@ -104,17 +104,32 @@ export function batchArray<T>(arr: T[], batchSize: number): T[][] {
 }
 
 /**
- * Parse JSON safely, returning null on failure.
+ * Parse JSON safely, extracting from markdown code blocks or outer brackets if needed.
  */
 export function safeJsonParse<T>(text: string): T | null {
+  if (!text || typeof text !== 'string') return null;
+  const trimmed = text.trim();
+  
+  // 1. Direct parse attempt
   try {
-    // Strip markdown code fences if present
-    const cleaned = text
-      .replace(/^```(?:json)?\s*/m, '')
-      .replace(/\s*```\s*$/m, '')
-      .trim();
-    return JSON.parse(cleaned) as T;
-  } catch {
-    return null;
-  }
+    return JSON.parse(trimmed) as T;
+  } catch {}
+  
+  // 2. Extract from markdown code fences ```json ... ```
+  try {
+    const fenceMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+    if (fenceMatch && fenceMatch[1]) {
+      return JSON.parse(fenceMatch[1].trim()) as T;
+    }
+  } catch {}
+  
+  // 3. Extract between outer braces {...} or brackets [...]
+  try {
+    const objMatch = trimmed.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
+    if (objMatch && objMatch[1]) {
+      return JSON.parse(objMatch[1].trim()) as T;
+    }
+  } catch {}
+  
+  return null;
 }
