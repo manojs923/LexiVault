@@ -46,6 +46,8 @@ services:
       DATABASE_URL: postgresql://fenco:fenco_password@postgres:5432/fenco_db
       REDIS_URL: redis://redis:6379
       GEMINI_API_KEY: ${GEMINI_API_KEY:-pending_key}
+      MISTRAL_API_KEY: ${MISTRAL_API_KEY:-}
+      LLM_PROVIDER: ${LLM_PROVIDER:-auto}
       CORS_ORIGIN: http://localhost:80
     ports:
       - '3001:3001'

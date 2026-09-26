@@ -5,7 +5,8 @@
   "scripts": {
     "setup": "bash scripts/bootstrap.sh",
     "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
-    "build": "cd backend && npm run build && cd ../frontend && npm run build",
+    "build": "cd backend && npm install && npm run build",
+    "start": "cd backend && npm run start",
     "test": "cd backend && npm test",
     "check:naming": "bash scripts/check-naming-contract.sh",
     "check:sql": "bash scripts/check-sql-interpolation.sh",
