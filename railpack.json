@@ -1,0 +1,10 @@
+{
+  "options": {
+    "buildArgs": {
+      "NODE_ENV": "production"
+    }
+  },
+  "deploy": {
+    "cmd": "cd backend && npm run start"
+  }
+}
