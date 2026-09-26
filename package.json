@@ -7,6 +7,8 @@
     "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
     "build": "cd backend && npm install && npm run build",
     "start": "cd backend && npm run start",
+    "migrate": "node backend/dist/db/migrate.js",
+    "seed": "node backend/dist/db/seed.js",
     "test": "cd backend && npm test",
     "check:naming": "bash scripts/check-naming-contract.sh",
     "check:sql": "bash scripts/check-sql-interpolation.sh",
